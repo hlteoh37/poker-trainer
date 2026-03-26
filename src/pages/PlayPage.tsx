@@ -6,6 +6,7 @@ import { generateCoachingAdvice } from '../stats/coaching';
 import type { CoachingAdvice } from '../stats/types';
 import { PokerTable } from '../components/table/PokerTable';
 import { CoachingPanel } from '../components/coaching/CoachingPanel';
+import { CoachBanner } from '../components/coaching/CoachBanner';
 import { Button } from '../components/common/Button';
 
 export function PlayPage() {
@@ -65,9 +66,9 @@ export function PlayPage() {
       <div className="hidden md:block">
         <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
       </div>
-      {/* Mobile: sticky coach above bottom nav */}
-      <div className="md:hidden fixed bottom-12 left-0 right-0 z-40 max-h-[50vh] overflow-y-auto">
-        <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
+      {/* Mobile: compact banner above bottom nav */}
+      <div className="md:hidden fixed bottom-12 left-0 right-0 z-40">
+        <CoachBanner advice={advice} />
       </div>
     </div>
   );
