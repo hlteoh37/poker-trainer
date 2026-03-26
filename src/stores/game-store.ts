@@ -5,7 +5,6 @@ import { createGame, startHand, advanceToNextPlayer, isRoundComplete, advanceRou
 import { applyAction } from '../engine/betting';
 import { makeAIDecision } from '../ai/decision';
 import { evaluateHand } from '../engine/hand-eval';
-import { calculateSidePots } from '../engine/pot';
 
 interface HandHistory {
   actions: { playerId: string; action: PlayerAction; round: string }[];
@@ -133,39 +132,31 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
   },
 }));
 
-function resolveShowdown(state: GameState): GameState {
+export function resolveShowdown(state: GameState): GameState {
   const activePlayers = state.players.filter((p) => !p.hasFolded);
-  const pots = calculateSidePots(state.players);
-  const winners: { playerId: string; amount: number }[] = [];
+  if (activePlayers.length === 0) return { ...state, isHandComplete: true };
 
-  for (const pot of pots) {
-    const eligible = activePlayers.filter((p) => pot.eligiblePlayerIds.includes(p.id));
-    if (eligible.length === 0) continue;
+  // Find the best hand(s)
+  let bestResult = evaluateHand([...activePlayers[0].holeCards!, ...state.communityCards]);
+  let bestPlayers = [activePlayers[0]];
 
-    let bestResult = evaluateHand([...eligible[0].holeCards!, ...state.communityCards]);
-    let bestPlayers = [eligible[0]];
+  for (let i = 1; i < activePlayers.length; i++) {
+    const result = evaluateHand([...activePlayers[i].holeCards!, ...state.communityCards]);
+    const cmp = result.rank !== bestResult.rank ? result.rank - bestResult.rank
+      : (() => { for (let j = 0; j < Math.min(result.values.length, bestResult.values.length); j++) { if (result.values[j] !== bestResult.values[j]) return result.values[j] - bestResult.values[j]; } return 0; })();
 
-    for (let i = 1; i < eligible.length; i++) {
-      const result = evaluateHand([...eligible[i].holeCards!, ...state.communityCards]);
-      const cmp = result.rank !== bestResult.rank ? result.rank - bestResult.rank
-        : (() => { for (let j = 0; j < Math.min(result.values.length, bestResult.values.length); j++) { if (result.values[j] !== bestResult.values[j]) return result.values[j] - bestResult.values[j]; } return 0; })();
-
-      if (cmp > 0) { bestResult = result; bestPlayers = [eligible[i]]; }
-      else if (cmp === 0) { bestPlayers.push(eligible[i]); }
-    }
-
-    const share = Math.floor(pot.amount / bestPlayers.length);
-    for (const p of bestPlayers) {
-      const existing = winners.find((w) => w.playerId === p.id);
-      if (existing) { existing.amount += share; }
-      else { winners.push({ playerId: p.id, amount: share }); }
-    }
+    if (cmp > 0) { bestResult = result; bestPlayers = [activePlayers[i]]; }
+    else if (cmp === 0) { bestPlayers.push(activePlayers[i]); }
   }
+
+  // Distribute the pot from state.pot (the running total)
+  const share = Math.floor(state.pot / bestPlayers.length);
+  const winners = bestPlayers.map((p) => ({ playerId: p.id, amount: share }));
 
   const updatedPlayers = state.players.map((p) => {
     const won = winners.find((w) => w.playerId === p.id);
     return won ? { ...p, chips: p.chips + won.amount } : { ...p };
   });
 
-  return { ...state, players: updatedPlayers, winners, isHandComplete: true };
+  return { ...state, players: updatedPlayers, pot: 0, winners, isHandComplete: true };
 }
