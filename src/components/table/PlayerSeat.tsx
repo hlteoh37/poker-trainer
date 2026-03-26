@@ -17,7 +17,10 @@ export function PlayerSeat({ player, isCurrentPlayer, showCards }: PlayerSeatPro
           <><CardDisplay card={player.holeCards[0]} size="sm" faceDown /><CardDisplay card={player.holeCards[1]} size="sm" faceDown /></>
         ) : null}
       </div>
-      <span className="text-xs text-gray-300 truncate max-w-20">{player.name}</span>
+      <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-300 truncate max-w-20">{player.name}</span>
+        <span className="text-[10px] text-gray-500 font-mono">{player.position}</span>
+      </div>
       <span className="text-xs text-yellow-400">{player.chips}</span>
       {player.currentBet > 0 && <span className="text-xs text-green-300">Bet: {player.currentBet}</span>}
       {player.hasFolded && <span className="text-xs text-red-400">Folded</span>}
