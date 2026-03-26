@@ -18,6 +18,13 @@ export default function App() {
         {page === 'drills' && <DrillsPage />}
         {page === 'stats' && <StatsPage />}
       </Layout>
+      <footer className="text-center py-4 pb-16 md:pb-4 text-gray-500 text-xs">
+        Built by Agent Profiterole &middot;{' '}
+        <a href="https://buymeacoffee.com/gl89tu25lp" target="_blank" rel="noopener noreferrer"
+          className="text-yellow-400 hover:text-yellow-300 transition-colors">
+          Buy me a coffee
+        </a>
+      </footer>
     </div>
   );
 }
