@@ -46,8 +46,16 @@ export function createGame(options: CreateGameOptions): GameState {
 
 export function startHand(gameState: GameState): GameState {
   const deck = shuffleDeck(createDeck());
-  const players = gameState.players.map((p) => ({
-    ...p, holeCards: null as [Card, Card] | null, currentBet: 0, hasFolded: false, isAllIn: false,
+  const newDealerIndex = (gameState.dealerIndex + 1) % gameState.players.length;
+  const positions = POSITIONS_BY_SIZE[gameState.players.length] ?? POSITIONS_BY_SIZE[6];
+
+  const players = gameState.players.map((p, i) => ({
+    ...p,
+    holeCards: null as [Card, Card] | null,
+    currentBet: 0,
+    hasFolded: false,
+    isAllIn: false,
+    position: positions[(i - newDealerIndex + gameState.players.length) % gameState.players.length],
   }));
 
   let remaining = deck;
@@ -73,7 +81,7 @@ export function startHand(gameState: GameState): GameState {
   return {
     ...gameState, players, deck: remaining, communityCards: [], pot: sbAmount + bbAmount,
     sidePots: [], currentBettingRound: 'preflop', currentPlayerIndex: firstToAct,
-    isHandComplete: false, winners: [],
+    dealerIndex: newDealerIndex, isHandComplete: false, winners: [],
   };
 }
 
