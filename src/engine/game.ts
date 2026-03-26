@@ -33,6 +33,7 @@ export function createGame(options: CreateGameOptions): GameState {
       hasFolded: false,
       isAllIn: false,
       isHuman: i === 0,
+      hasActedThisRound: false,
     });
   }
 
@@ -55,6 +56,7 @@ export function startHand(gameState: GameState): GameState {
     currentBet: 0,
     hasFolded: false,
     isAllIn: false,
+    hasActedThisRound: false,
     position: positions[(i - newDealerIndex + gameState.players.length) % gameState.players.length],
   }));
 
@@ -105,11 +107,11 @@ export function isRoundComplete(state: GameState): boolean {
   const activePlayers = state.players.filter((p) => !p.hasFolded && !p.isAllIn);
   if (activePlayers.length === 0) return true;
   const highestBet = Math.max(...state.players.map((p) => p.currentBet));
-  return activePlayers.every((p) => p.currentBet === highestBet);
+  return activePlayers.every((p) => p.hasActedThisRound && p.currentBet === highestBet);
 }
 
 export function advanceRound(state: GameState): GameState {
-  const next = { ...state, players: state.players.map((p) => ({ ...p, currentBet: 0 })) };
+  const next = { ...state, players: state.players.map((p) => ({ ...p, currentBet: 0, hasActedThisRound: false })) };
 
   let cardsToDeal: number;
   switch (state.currentBettingRound) {

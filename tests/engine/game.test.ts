@@ -48,14 +48,36 @@ describe('advanceToNextPlayer', () => {
 });
 
 describe('isRoundComplete', () => {
-  it('returns true when all active players have matched the highest bet', () => {
+  it('returns true when all active players have acted and matched the highest bet', () => {
     const game = createGame({ humanName: 'Hero', aiCount: 1, startingChips: 1000, smallBlind: 5, bigBlind: 10 });
     const state = startHand(game);
     state.players[0].currentBet = 10;
     state.players[0].chips = 990;
+    state.players[0].hasActedThisRound = true;
     state.players[1].currentBet = 10;
     state.players[1].chips = 990;
+    state.players[1].hasActedThisRound = true;
     expect(isRoundComplete(state)).toBe(true);
+  });
+
+  it('returns false when a player has not acted yet even if bets are equal', () => {
+    const game = createGame({ humanName: 'Hero', aiCount: 1, startingChips: 1000, smallBlind: 5, bigBlind: 10 });
+    const state = startHand(game);
+    // Postflop scenario: all bets are 0, first player checks
+    state.players.forEach((p) => { p.currentBet = 0; });
+    state.players[0].hasActedThisRound = true;  // first player checked
+    state.players[1].hasActedThisRound = false;  // second player hasn't acted
+    expect(isRoundComplete(state)).toBe(false);
+  });
+
+  it('returns false when a raise reopens action', () => {
+    const game = createGame({ humanName: 'Hero', aiCount: 1, startingChips: 1000, smallBlind: 5, bigBlind: 10 });
+    const state = startHand(game);
+    state.players[0].currentBet = 30;
+    state.players[0].hasActedThisRound = true;
+    state.players[1].currentBet = 10;
+    state.players[1].hasActedThisRound = false; // reopened by raise
+    expect(isRoundComplete(state)).toBe(false);
   });
 });
 

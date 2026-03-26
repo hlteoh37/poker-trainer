@@ -27,6 +27,7 @@ export interface Player {
   hasFolded: boolean;
   isAllIn: boolean;
   isHuman: boolean;
+  hasActedThisRound: boolean;
 }
 
 export interface GameState {

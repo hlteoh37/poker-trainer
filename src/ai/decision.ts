@@ -48,17 +48,33 @@ export function makeAIDecision(state: GameState, config: AIConfig): PlayerAction
     if (validTypes.includes('check')) return { type: 'check' };
   }
 
+  // Facing a raise postflop — consider pot odds and hand strength
+  const potOdds = toCall / (state.pot + toCall);
+
+  // Fold weak hands facing significant bets
+  if (adjustedStrength < potOdds) {
+    // Hand isn't strong enough to justify the call
+    if (Math.random() < profile.foldToRaise + (1 - adjustedStrength) * 0.3) {
+      return { type: 'fold' };
+    }
+  }
+
+  // Re-raise with strong hands
   if (adjustedStrength > 0.7 && validTypes.includes('raise')) {
     const raiseAction = validActions.find((a) => a.type === 'raise')!;
     const raiseSize = Math.round(highestBet * (2 + profile.aggression));
     return { type: 'raise', amount: Math.max(raiseAction.minAmount ?? state.bigBlind, Math.min(raiseSize, raiseAction.maxAmount ?? raiseSize)) };
   }
 
-  if (adjustedStrength > (1 - profile.vpip) * 0.8) {
-    if (validTypes.includes('call')) return { type: 'call' };
+  // Call with decent hands that justify the pot odds
+  if (adjustedStrength > potOdds && validTypes.includes('call')) {
+    return { type: 'call' };
   }
 
-  if (Math.random() < profile.foldToRaise) return { type: 'fold' };
-  if (validTypes.includes('call')) return { type: 'call' };
+  // Occasional bluff-call
+  if (Math.random() < (1 - profile.foldToRaise) * 0.2 && validTypes.includes('call')) {
+    return { type: 'call' };
+  }
+
   return { type: 'fold' };
 }

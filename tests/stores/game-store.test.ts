@@ -12,6 +12,7 @@ function makePlayer(overrides: Partial<Player> & { id: string }): Player {
     hasFolded: false,
     isAllIn: false,
     isHuman: false,
+    hasActedThisRound: false,
     ...overrides,
   };
 }

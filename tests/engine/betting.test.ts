@@ -8,6 +8,7 @@ function makePlayer(overrides: Partial<Player> = {}): Player {
     id: 'p1', name: 'Player 1', chips: 1000,
     holeCards: [createCard('hearts', 'A'), createCard('spades', 'K')],
     position: 'BTN', currentBet: 0, hasFolded: false, isAllIn: false, isHuman: true,
+    hasActedThisRound: false,
     ...overrides,
   };
 }
@@ -86,5 +87,25 @@ describe('applyAction', () => {
     expect(next.players[2].currentBet).toBe(30);
     expect(next.players[2].chips).toBe(970);
     expect(next.pot).toBe(45);
+  });
+
+  it('sets hasActedThisRound on the acting player', () => {
+    const state = makeGameState();
+    expect(state.players[2].hasActedThisRound).toBe(false);
+    const next = applyAction(state, { type: 'call' });
+    expect(next.players[2].hasActedThisRound).toBe(true);
+  });
+
+  it('raise reopens action for other players', () => {
+    const state = makeGameState();
+    // Simulate: p1 already acted
+    state.players[0].hasActedThisRound = true;
+    state.players[1].hasActedThisRound = true;
+    const next = applyAction(state, { type: 'raise', amount: 30 });
+    // Raiser has acted
+    expect(next.players[2].hasActedThisRound).toBe(true);
+    // Others need to act again (not folded/all-in)
+    expect(next.players[0].hasActedThisRound).toBe(false);
+    expect(next.players[1].hasActedThisRound).toBe(false);
   });
 });
