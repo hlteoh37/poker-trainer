@@ -14,13 +14,15 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <NavBar currentPage={page} onNavigate={setPage} />
-      <Layout>
+      {/* Spacer for fixed support banner on mobile */}
+      {showSupport && <div className="h-9 md:h-0" />}
+      <Layout showSupport={showSupport}>
         {page === 'play' && <PlayPage />}
         {page === 'drills' && <DrillsPage />}
         {page === 'stats' && <StatsPage />}
       </Layout>
       {showSupport && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center gap-2">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center gap-2 md:static md:border-b-0 md:border-t md:border-gray-700">
           <p className="flex-1 text-xs text-gray-400 text-center">
             Enjoying this free poker coach?{' '}
             <a href="https://buymeacoffee.com/gl89tu25lp" target="_blank" rel="noopener noreferrer"
