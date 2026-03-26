@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { NavBar } from './components/common/NavBar';
+import { Layout } from './components/common/Layout';
+import { PlayPage } from './pages/PlayPage';
+import { DrillsPage } from './pages/DrillsPage';
+import { StatsPage } from './pages/StatsPage';
 
 type Page = 'play' | 'drills' | 'stats';
 
@@ -7,31 +12,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <main className="flex-1 p-4">
-        {page === 'play' && <div>Play Mode</div>}
-        {page === 'drills' && <div>Drill Mode</div>}
-        {page === 'stats' && <div>Stats</div>}
-      </main>
-      <nav className="flex justify-around bg-gray-800 p-3 md:hidden">
-        <button
-          className={`text-sm ${page === 'play' ? 'text-green-400' : 'text-gray-400'}`}
-          onClick={() => setPage('play')}
-        >
-          Play
-        </button>
-        <button
-          className={`text-sm ${page === 'drills' ? 'text-green-400' : 'text-gray-400'}`}
-          onClick={() => setPage('drills')}
-        >
-          Drills
-        </button>
-        <button
-          className={`text-sm ${page === 'stats' ? 'text-green-400' : 'text-gray-400'}`}
-          onClick={() => setPage('stats')}
-        >
-          Stats
-        </button>
-      </nav>
+      <NavBar currentPage={page} onNavigate={setPage} />
+      <Layout>
+        {page === 'play' && <PlayPage />}
+        {page === 'drills' && <DrillsPage />}
+        {page === 'stats' && <StatsPage />}
+      </Layout>
     </div>
   );
 }

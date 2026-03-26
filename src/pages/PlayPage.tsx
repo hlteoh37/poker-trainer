@@ -6,7 +6,6 @@ import { calculateEquity } from '../stats/equity';
 import { calculateCallEV, calculateFoldEV, calculateRaiseEV } from '../stats/ev';
 import { calculatePotOdds } from '../stats/pot-odds';
 import type { CoachingAdvice, ActionEV } from '../stats/types';
-import type { PlayerAction } from '../engine/types';
 import { PokerTable } from '../components/table/PokerTable';
 import { CoachingPanel } from '../components/coaching/CoachingPanel';
 import { Button } from '../components/common/Button';
