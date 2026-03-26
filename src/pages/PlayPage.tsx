@@ -60,19 +60,15 @@ export function PlayPage() {
           </div>
         ) : null}
         {!gameState.isHandComplete && gameState.pot === 0 && <Button onClick={dealNewHand}>Deal Hand</Button>}
-        {/* Coaching panel flows inline on mobile, sidebar on desktop */}
-        {showCoaching && (
-          <div className="w-full md:hidden">
-            <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
-          </div>
-        )}
-      </div>
-      {/* Desktop sidebar */}
-      {showCoaching && (
-        <div className="hidden md:block">
+        {/* Coaching panel flows inline on mobile */}
+        <div className="w-full md:hidden">
           <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
         </div>
-      )}
+      </div>
+      {/* Desktop sidebar */}
+      <div className="hidden md:block">
+        <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
+      </div>
     </div>
   );
 }

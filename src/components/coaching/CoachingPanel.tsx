@@ -9,11 +9,12 @@ interface CoachingPanelProps { advice: CoachingAdvice | null; visible: boolean; 
 export function CoachingPanel({ advice, visible, onToggle }: CoachingPanelProps) {
   return (
     <div className="w-full md:w-72">
-      <button onClick={onToggle} className="w-full bg-gray-800 text-gray-400 text-xs py-1 text-center md:hidden rounded-t-lg">
-        {visible ? '▾ Hide Coaching' : '▸ Show Coaching'}
+      <button onClick={onToggle}
+        className={`w-full bg-gray-800 text-gray-400 text-xs py-2 text-center border border-gray-700 ${visible ? 'rounded-t-lg border-b-0' : 'rounded-lg'}`}>
+        {visible ? '▾ Hide Coach' : '▸ Show Coach'}
       </button>
       {visible && (
-        <div className="bg-gray-800 border border-gray-700 md:rounded-lg rounded-b-lg p-3 md:p-4 flex flex-col gap-2 md:gap-3">
+        <div className="bg-gray-800 border border-gray-700 rounded-b-lg p-3 md:p-4 flex flex-col gap-2 md:gap-3">
           {advice ? (
             <>
               <Recommendation action={advice.recommendedAction} explanation={advice.explanation} />
