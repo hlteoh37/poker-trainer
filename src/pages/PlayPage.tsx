@@ -60,13 +60,13 @@ export function PlayPage() {
           </div>
         ) : null}
         {!gameState.isHandComplete && gameState.pot === 0 && <Button onClick={dealNewHand}>Deal Hand</Button>}
-        {/* Coaching panel flows inline on mobile */}
-        <div className="w-full md:hidden">
-          <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
-        </div>
       </div>
       {/* Desktop sidebar */}
       <div className="hidden md:block">
+        <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
+      </div>
+      {/* Mobile: sticky coach above bottom nav */}
+      <div className="md:hidden fixed bottom-12 left-0 right-0 z-40 max-h-[50vh] overflow-y-auto">
         <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
       </div>
     </div>
