@@ -64,7 +64,11 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
 
     const activePlayers = state.players.filter((p) => !p.hasFolded);
     if (activePlayers.length === 1) {
-      state = { ...state, isHandComplete: true, winners: [{ playerId: activePlayers[0].id, amount: state.pot }] };
+      const winnerId = activePlayers[0].id;
+      const updatedPlayers = state.players.map((p) =>
+        p.id === winnerId ? { ...p, chips: p.chips + state.pot } : { ...p }
+      );
+      state = { ...state, players: updatedPlayers, isHandComplete: true, winners: [{ playerId: winnerId, amount: state.pot }] };
       set({ gameState: state, handHistory: { ...history, winners: state.winners }, isWaitingForHuman: false });
       return;
     }
@@ -101,7 +105,12 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
 
       const activePlayers = state.players.filter((p) => !p.hasFolded);
       if (activePlayers.length === 1) {
-        state = { ...state, isHandComplete: true, winners: [{ playerId: activePlayers[0].id, amount: state.pot }] };
+        const winnerId = activePlayers[0].id;
+        const potAmount = state.pot;
+        const updatedPlayers = state.players.map((p) =>
+          p.id === winnerId ? { ...p, chips: p.chips + potAmount } : { ...p }
+        );
+        state = { ...state, players: updatedPlayers, isHandComplete: true, winners: [{ playerId: winnerId, amount: potAmount }] };
         break;
       }
 
