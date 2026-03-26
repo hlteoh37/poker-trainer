@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGameStore } from '../stores/game-store';
 import { useSettingsStore } from '../stores/settings-store';
 import { getValidActions } from '../engine/betting';
-import { calculateEquity } from '../stats/equity';
-import { calculateCallEV, calculateFoldEV, calculateRaiseEV } from '../stats/ev';
-import { calculatePotOdds } from '../stats/pot-odds';
-import type { CoachingAdvice, ActionEV } from '../stats/types';
+import { generateCoachingAdvice } from '../stats/coaching';
+import type { CoachingAdvice } from '../stats/types';
 import { PokerTable } from '../components/table/PokerTable';
 import { CoachingPanel } from '../components/coaching/CoachingPanel';
 import { Button } from '../components/common/Button';
@@ -26,26 +24,7 @@ export function PlayPage() {
       setAdvice(null);
       return;
     }
-    const human = gameState.players.find((p) => p.isHuman);
-    if (!human?.holeCards) return;
-
-    const equity = calculateEquity(human.holeCards, gameState.communityCards, 500);
-    const highestBet = Math.max(...gameState.players.map((p) => p.currentBet));
-    const toCall = highestBet - human.currentBet;
-    const potOdds = calculatePotOdds(gameState.pot, toCall);
-
-    const actionEVs: ActionEV[] = [
-      { action: { type: 'fold' }, ev: calculateFoldEV(), explanation: 'You lose nothing more.' },
-    ];
-    if (toCall > 0) {
-      const callEV = calculateCallEV(equity.win, gameState.pot, toCall);
-      actionEVs.push({ action: { type: 'call' }, ev: callEV, explanation: `Calling ${toCall} with ${Math.round(equity.win * 100)}% equity.` });
-    }
-    const raiseEV = calculateRaiseEV(equity.win, gameState.pot, gameState.bigBlind * 3, 0.3);
-    actionEVs.push({ action: { type: 'raise' }, ev: raiseEV, explanation: 'Value raise or semi-bluff.' });
-
-    const best = actionEVs.reduce((a, b) => (a.ev > b.ev ? a : b));
-    setAdvice({ equity: equity.win, potOdds, actionEVs, recommendedAction: best.action, explanation: best.explanation });
+    setAdvice(generateCoachingAdvice(gameState));
   }, [gameState, isWaitingForHuman]);
 
   if (!gameState) return <div className="text-center p-8">Loading...</div>;
