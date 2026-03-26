@@ -8,12 +8,12 @@ interface CoachingPanelProps { advice: CoachingAdvice | null; visible: boolean; 
 
 export function CoachingPanel({ advice, visible, onToggle }: CoachingPanelProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 md:static md:w-72 z-40">
-      <button onClick={onToggle} className="w-full bg-gray-800 text-gray-400 text-xs py-1 text-center md:hidden">
-        {visible ? 'Hide Coaching' : 'Show Coaching'}
+    <div className="w-full md:w-72">
+      <button onClick={onToggle} className="w-full bg-gray-800 text-gray-400 text-xs py-1 text-center md:hidden rounded-t-lg">
+        {visible ? '▾ Hide Coaching' : '▸ Show Coaching'}
       </button>
       {visible && (
-        <div className="bg-gray-800 border-t border-gray-700 md:border md:rounded-lg p-4 flex flex-col gap-3">
+        <div className="bg-gray-800 border border-gray-700 md:rounded-lg rounded-b-lg p-3 md:p-4 flex flex-col gap-2 md:gap-3">
           {advice ? (
             <>
               <Recommendation action={advice.recommendedAction} explanation={advice.explanation} />

@@ -39,7 +39,7 @@ export function PlayPage() {
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <div className="flex-1 flex flex-col items-center gap-4">
+      <div className="flex-1 flex flex-col items-center gap-3">
         <PokerTable gameState={gameState} validActions={validActions}
           isWaitingForHuman={isWaitingForHuman && !gameState.isHandComplete} onAction={humanAct} />
         {humanBusted ? (
@@ -60,8 +60,19 @@ export function PlayPage() {
           </div>
         ) : null}
         {!gameState.isHandComplete && gameState.pot === 0 && <Button onClick={dealNewHand}>Deal Hand</Button>}
+        {/* Coaching panel flows inline on mobile, sidebar on desktop */}
+        {showCoaching && (
+          <div className="w-full md:hidden">
+            <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
+          </div>
+        )}
       </div>
-      {showCoaching && <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />}
+      {/* Desktop sidebar */}
+      {showCoaching && (
+        <div className="hidden md:block">
+          <CoachingPanel advice={advice} visible={showCoaching} onToggle={toggleCoaching} />
+        </div>
+      )}
     </div>
   );
 }
